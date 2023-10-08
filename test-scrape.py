@@ -36,3 +36,5 @@ search = driver.find_element(By.CLASS_NAME, "jobs-search-box__text-input")
 search.send_keys("Devops Engineer")
 time.sleep(1)
 search.send_keys(u'\ue007')
+
+# Next step is to go to the job titles and extract the job descriptions
