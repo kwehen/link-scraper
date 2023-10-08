@@ -1,4 +1,5 @@
 from selenium import webdriver
+import selenium
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import time
@@ -18,4 +19,16 @@ password.send_keys(sensitive.password)
 
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
-# driver = webdriver.Firefox("/Applications/Firefox.app")
+time.sleep(5)
+
+jobs_link = driver.find_element(By.LINK_TEXT, "Jobs")
+jobs_link.click()
+
+time.sleep(5)
+
+job_src = driver.page_source
+soup = BeautifulSoup(job_src, 'lxml')
+
+search = driver.find_element(By.CLASS_NAME, "jobs-search-box__text-input")
+search.send_keys("Devops Engineer")
+search.send_keys(u'\ue007')
