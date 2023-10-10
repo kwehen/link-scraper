@@ -50,4 +50,4 @@ for job in job_title:
     job_links.append(link)
 
 # Next step is to scroll the page and add more jobs to the list + open them
-# Additiona step is to go to each page and scrape the job description/requirements
+# Additional step is to go to each page and scrape the job description/requirements
