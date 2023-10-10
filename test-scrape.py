@@ -5,6 +5,7 @@ import time
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 import sensitive
+from selenium.webdriver.common.keys import Keys
 
 # Web Driver for Firefox
 driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
@@ -36,5 +37,17 @@ search = driver.find_element(By.CLASS_NAME, "jobs-search-box__text-input")
 search.send_keys("Devops Engineer")
 time.sleep(1)
 search.send_keys(u'\ue007')
+time.sleep(3)
 
-# Next step is to go to the job titles and extract the job descriptions
+# Get the links for each job displayed
+job_links = []
+job_title = driver.find_elements(By.CLASS_NAME, "job-card-container__link")
+for job in job_title:
+    link = job.get_attribute("href")
+    # Open link in new tab
+    driver.execute_script("window.open('" + link + "');")
+    time.sleep(0.5)
+    job_links.append(link)
+
+# Next step is to scroll the page and add more jobs to the list + open them
+# Additiona step is to go to each page and scrape the job description/requirements
