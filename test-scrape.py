@@ -59,6 +59,8 @@ while tab <= num:
     time.sleep(3)
     see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
     see_more.click()
+    description = driver.find_element(By.ID, "job-details")
+    print(description.text)
     time.sleep(2)
     tab += 1
 
