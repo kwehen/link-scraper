@@ -12,7 +12,7 @@ driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()
 
 # Get Linkedin login page
 driver.get("https://linkedin.com/uas/login")
-time.sleep(5)
+time.sleep(3)
 
 # Login
 username = driver.find_element(By.ID, "username")
@@ -51,3 +51,16 @@ for job in job_title:
 
 # Next step is to scroll the page and add more jobs to the list + open them
 # Additional step is to go to each page and scrape the job description/requirements
+tab = 1
+num = len(job_links)
+
+while tab <= num:
+    driver.switch_to.window(driver.window_handles[tab])
+    time.sleep(3)
+    see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
+    see_more.click()
+    time.sleep(2)
+    tab += 1
+
+# driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+# driver.quit()
