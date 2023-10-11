@@ -54,15 +54,21 @@ for job in job_title:
 tab = 1
 num = len(job_links)
 
+file = open("job_descriptions.txt", "w")
+
 while tab <= num:
     driver.switch_to.window(driver.window_handles[tab])
     time.sleep(3)
     see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
     see_more.click()
     description = driver.find_element(By.ID, "job-details")
-    print(description.text)
+    file.write(f'\nJob {tab}\n {description.text}')
+    print(f"Job {tab} of {num} scraped successfully")
     time.sleep(2)
     tab += 1
+
+file.close()
+driver.quit()
 
 # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 # driver.quit()
