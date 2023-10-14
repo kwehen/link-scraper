@@ -78,7 +78,7 @@ for link in job_links:
         see_more.click()
         description = driver.find_element(By.ID, "job-details")
         title = driver.find_element(By.CLASS_NAME, "job-details-jobs-unified-top-card__job-title").text
-        file.write(f'\n{title}\n {description.text}')
+        file.write(f'\n{title}\n {description.text}\n')
         time.sleep(2)
         print(f"Job {tab} of {num} scraped successfully")
         time.sleep(2)
