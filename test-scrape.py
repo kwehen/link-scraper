@@ -6,6 +6,7 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 import sensitive
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 
 # Web Driver for Firefox
 driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
@@ -35,40 +36,56 @@ time.sleep(3)
 search = driver.find_element(By.CLASS_NAME, "jobs-search-box__text-input")
 # In the future, change this to input variable so that a user can scrape for their specified job title
 search.send_keys("Devops Engineer")
+time.sleep(2)
+search2 = driver.find_element(By.XPATH, "//input[@aria-label='City, state, or zip code']")
+driver.execute_script("arguments[0].click();", search2)
+# search2 = driver.find_element(By.CLASS_NAME, "jobs-search-box__ghost-text-input")
+city = "Atlanta, Georgia, United States"
+search2.send_keys(city)
 time.sleep(1)
 search.send_keys(u'\ue007')
 time.sleep(3)
 
 # Get the links for each job displayed
 job_links = []
-job_title = driver.find_elements(By.CLASS_NAME, "job-card-container__link")
-for job in job_title:
-    link = job.get_attribute("href")
-    # Open link in new tab
-    driver.execute_script("window.open('" + link + "');")
-    time.sleep(0.5)
-    job_links.append(link)
+jobs_block = driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
+jobs_list = jobs_block.find_elements(By.CSS_SELECTOR, ".jobs-search-results__list-item")
 
-# Next step is to scroll the page and add more jobs to the list + open them
-# Additional step is to go to each page and scrape the job description/requirements
+for job in jobs_list:
+    time.sleep(0.5)
+    driver.execute_script("arguments[0].scrollIntoView();", job)
+    all_links = job.find_elements(By.TAG_NAME, 'a')
+    for a in all_links:
+        if str(a.get_attribute('href')).startswith("https://www.linkedin.com/jobs/view") and a.get_attribute('href') not in job_links: 
+            job_links.append(a.get_attribute('href'))
+        else:
+            pass
+
 tab = 1
 num = len(job_links)
+print(num)
 
 file = open("job_descriptions.txt", "w")
 
-while tab <= num:
-    driver.switch_to.window(driver.window_handles[tab])
-    time.sleep(3)
-    see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
-    see_more.click()
-    description = driver.find_element(By.ID, "job-details")
-    file.write(f'\nJob {tab}\n {description.text}')
-    print(f"Job {tab} of {num} scraped successfully")
-    time.sleep(2)
-    tab += 1
+for link in job_links:
+    driver.execute_script("window.open('" + link + "');")
+    # Get the handles of all currently open tabs/windows
+    all_handles = driver.window_handles
+    if len(all_handles) > 1:
+        driver.switch_to.window(all_handles[1])
+        time.sleep(5)
+        see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
+        see_more.click()
+        description = driver.find_element(By.ID, "job-details")
+        title = driver.find_element(By.CLASS_NAME, "job-details-jobs-unified-top-card__job-title").text
+        file.write(f'\n{title}\n {description.text}')
+        time.sleep(2)
+        print(f"Job {tab} of {num} scraped successfully")
+        time.sleep(2)
+        tab += 1
+        driver.close()  # Close the current tab
+    driver.switch_to.window(all_handles[0])  # Switch back to the original tab
+    time.sleep(0.5)
 
 file.close()
 driver.quit()
-
-# driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-# driver.quit()
