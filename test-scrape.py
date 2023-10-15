@@ -39,7 +39,6 @@ search.send_keys("Devops Engineer")
 time.sleep(2)
 search2 = driver.find_element(By.XPATH, "//input[@aria-label='City, state, or zip code']")
 driver.execute_script("arguments[0].click();", search2)
-# search2 = driver.find_element(By.CLASS_NAME, "jobs-search-box__ghost-text-input")
 city = "Atlanta, Georgia, United States"
 search2.send_keys(city)
 time.sleep(1)
@@ -51,6 +50,7 @@ job_links = []
 jobs_block = driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
 jobs_list = jobs_block.find_elements(By.CSS_SELECTOR, ".jobs-search-results__list-item")
 
+# Scroll through the page to load all jobs
 for job in jobs_list:
     time.sleep(0.5)
     driver.execute_script("arguments[0].scrollIntoView();", job)
