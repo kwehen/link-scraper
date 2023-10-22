@@ -4,12 +4,16 @@ from bs4 import BeautifulSoup
 import time
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.options import Options
 import sensitive
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
+options = Options()
+options.add_argument("--headless")
 # Web Driver for Firefox
-driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
+driver.maximize_window()
 
 # Get Linkedin login page
 driver.get("https://linkedin.com/uas/login")
@@ -39,7 +43,7 @@ search.send_keys("Devops Engineer")
 time.sleep(2)
 search2 = driver.find_element(By.XPATH, "//input[@aria-label='City, state, or zip code']")
 driver.execute_script("arguments[0].click();", search2)
-city = "Atlanta, Georgia, United States"
+city = "Detroit, Michigan, United States"
 search2.send_keys(city)
 time.sleep(1)
 search.send_keys(u'\ue007')
@@ -72,19 +76,24 @@ for link in job_links:
     # Get the handles of all currently open tabs/windows
     all_handles = driver.window_handles
     if len(all_handles) > 1:
-        driver.switch_to.window(all_handles[1])
-        time.sleep(5)
-        see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
-        see_more.click()
-        description = driver.find_element(By.ID, "job-details")
-        title = driver.find_element(By.CLASS_NAME, "job-details-jobs-unified-top-card__job-title").text
-        file.write(f'\n{title}\n {description.text}\n')
-        time.sleep(2)
-        print(f"Job {tab} of {num} scraped successfully")
-        time.sleep(2)
-        tab += 1
-        driver.close()  # Close the current tab
-    driver.switch_to.window(all_handles[0])  # Switch back to the original tab
+        try:
+            driver.switch_to.window(all_handles[1])
+            time.sleep(5)
+            see_more = driver.find_element(By.XPATH, "//button[@aria-label='Click to see more description']")
+            see_more.click()
+            description = driver.find_element(By.ID, "job-details")
+            title = driver.find_element(By.CLASS_NAME, "job-details-jobs-unified-top-card__job-title").text
+            file.write(f'\n{title}\n {description.text}\n')
+            time.sleep(2)
+            print(f"Job {tab} of {num} scraped successfully")
+            time.sleep(2)
+            tab += 1
+            driver.close()  # Close the current tab
+        except:
+            print(f"Failed to scrape job {tab}")
+            tab += 1 
+            driver.close()
+        driver.switch_to.window(all_handles[0])  # Switch back to the original tab
     time.sleep(0.5)
 
 file.close()
